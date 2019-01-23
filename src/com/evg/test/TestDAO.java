@@ -31,14 +31,21 @@ public class TestDAO {
 		
 		try {
 			con.connection(); //abrimos la conexion
+			con.getConnection().setAutoCommit(false); // se indica el inicio de la transaccion
 			stm = (Statement) con.getConnection().createStatement();
 			stm.executeUpdate(sql);
+			con.getConnection().commit(); // si todo va bien hacemos comit y guardamos los datos
 			stm.close();
 			con.discconect();
 			estado = true;
 			
 		} catch (SQLException e) {
-			e.printStackTrace();
+			try {
+				con.getConnection().rollback(); // si algo salio mal en la transaccion hacemos roollback y no se guarda ningun registro
+				e.printStackTrace();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			} 
 		}
 		return estado;
 	}
